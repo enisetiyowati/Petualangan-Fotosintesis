@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Petualangan Fotosintesis</title>
+<style>
+:root{--bg:#f6fbf7;--card:#fff;--tx:#1f3a2b;--mut:#5d7a69;--g:#2e7d4f;--gl:#dff3e6;--y:#f4c542;--r:#fdeaea;--rt:#a33a3a;--bd:#cfe6d6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13211a;--card:#1c2e24;--tx:#e8f4ec;--mut:#9bb8a8;--g:#58b982;--gl:#24402f;--r:#3a2222;--rt:#f0a0a0;--bd:#2f4a3a}}
+:root[data-theme="dark"]{--bg:#13211a;--card:#1c2e24;--tx:#e8f4ec;--mut:#9bb8a8;--g:#58b982;--gl:#24402f;--r:#3a2222;--rt:#f0a0a0;--bd:#2f4a3a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Nunito","Segoe UI",system-ui,sans-serif;font-size:18px;line-height:1.5}
+.app{max-width:760px;margin:0 auto;padding:16px;min-height:100vh;display:flex;flex-direction:column}
+.bar{height:8px;background:var(--gl);border-radius:8px;overflow:hidden;margin-bottom:14px}
+.bar i{display:block;height:100%;width:0;background:var(--g);transition:width .5s}
+.card{background:var(--card);border:2px solid var(--bd);border-radius:24px;padding:24px;flex:1;animation:in .5s}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+h1{font-size:2rem;margin:.2em 0}h2{font-size:1.5rem;margin:.2em 0 .6em;color:var(--g)}
+p{margin:.5em 0}.mut{color:var(--mut)}.center{text-align:center}
+.big{font-size:5rem;line-height:1}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:14px}
+button{font:inherit;cursor:pointer;border:2px solid var(--g);background:var(--card);color:var(--g);border-radius:16px;padding:10px 18px;font-weight:700;transition:transform .15s,background .2s}
+button:hover:not(:disabled){transform:translateY(-2px)}button:disabled{opacity:.4;cursor:default}
+button.pri{background:var(--g);color:#fff}
+.sun{display:inline-block;animation:spin 8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.float{display:inline-block;animation:fl 3s ease-in-out infinite}@keyframes fl{50%{transform:translateY(-10px)}}
+.list{padding:0;list-style:none}.list li{background:var(--gl);border-radius:14px;padding:10px 14px;margin:8px 0}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.fact{background:var(--gl);border-radius:18px;padding:14px;text-align:center}.fact b{display:block}.fact span{font-size:2.2rem}
+.eq{background:var(--y);color:#3a2e00;border-radius:16px;padding:12px;text-align:center;font-weight:800;margin:12px 0}
+.stage{position:relative;background:linear-gradient(var(--gl),var(--card));border-radius:20px;height:190px;overflow:hidden;margin:10px 0;text-align:center}
+.plant{position:absolute;bottom:6px;left:50%;transform:translateX(-50%) scale(1);font-size:5rem;transition:transform .6s,filter .6s}
+.plant.on{transform:translateX(-50%) scale(1.3);filter:drop-shadow(0 0 14px var(--y))}
+.fly{position:absolute;font-size:2rem;animation:fly 1.2s ease-in forwards}
+@keyframes fly{to{left:50%;top:60%;opacity:0;transform:scale(.4)}}
+.up{position:absolute;font-size:2rem;animation:up 2s ease-out forwards}@keyframes up{to{transform:translateY(-130px);opacity:0}}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.tile{font-size:1rem;padding:12px}.tile span{display:block;font-size:2rem}.tile.ok{background:var(--gl)}
+.msg{min-height:3.2em;padding:10px 14px;border-radius:14px;margin-top:10px;background:var(--gl)}
+.msg.bad{background:var(--r);color:var(--rt)}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;font-weight:600}
+.opt.ok{background:var(--g);color:#fff}.opt.no{background:var(--r);color:var(--rt);border-color:var(--rt)}
+.term{font-size:1.7rem;font-weight:800;background:var(--y);color:#3a2e00;border-radius:16px;padding:12px;text-align:center;margin:8px 0}
+.score{font-size:3rem;font-weight:800;color:var(--g)}
+textarea{width:100%;font:inherit;border:2px solid var(--bd);border-radius:14px;padding:10px;background:var(--bg);color:var(--tx)}
+</style></head><body>
+<div class="app"><div class="bar"><i id="pb"></i></div><div id="v"></div>
+<div class="nav"><button id="pv">← Kembali</button><button id="nx" class="pri">Lanjut →</button></div></div>
+<script>
+var S=0,N=6,done=false,tog=[];
+var Q=[
+["Cahaya matahari","Sumber tenaga (energi) untuk fotosintesis","Cahaya matahari adalah sumber energi. Tanpa cahaya, tumbuhan tidak bisa membuat makanan."],
+["Air","Diserap oleh akar dari dalam tanah","Air diserap akar dari tanah lalu dialirkan ke daun untuk fotosintesis."],
+["Karbon dioksida (CO₂)","Gas dari udara yang masuk lewat daun","Karbon dioksida adalah gas dari udara. Tumbuhan menyerapnya lewat lubang kecil di daun."],
+["Klorofil","Zat hijau pada daun penangkap cahaya","Klorofil memberi warna hijau pada daun dan menangkap cahaya matahari."],
+["Akar","Bagian yang menyerap air dari tanah","Akar bertugas menyerap air dan mineral dari tanah."],
+["Daun","Tempat fotosintesis berlangsung","Fotosintesis terjadi di daun karena di sana banyak klorofil."],
+["Stomata","Lubang kecil di daun tempat masuknya CO₂","Stomata adalah lubang-lubang sangat kecil di daun untuk keluar masuknya gas."],
+["Oksigen (O₂)","Gas yang dilepaskan tumbuhan saat fotosintesis","Oksigen adalah hasil fotosintesis yang dilepas ke udara dan kita hirup."],
+["Glukosa","Makanan yang dibuat oleh tumbuhan","Glukosa adalah gula sebagai makanan tumbuhan hasil fotosintesis."],
+["Tumbuhan di tempat gelap","Daun menguning karena kurang cahaya untuk fotosintesis","Tanpa cahaya, fotosintesis terhenti sehingga tumbuhan lemah dan daunnya menguning."]];
+var qi=0,sc=0,ans=false,ord=[];
+function sh(a){return a.map(function(x){return[Math.random(),x]}).sort(function(a,b){return a[0]-b[0]}).map(function(x){return x[1]})}
+var v=document.getElementById('v');
+var A=[["🌞","Cahaya matahari",1,"Benar! Cahaya matahari adalah bahan penting."],["💧","Air",1,"Hebat! Air diserap dari tanah lewat akar."],["☁️","Karbon dioksida",1,"Tepat! Gas ini diambil dari udara."],["🪨","Batu",0,"Belum tepat. Batu tidak dipakai tumbuhan untuk membuat makanan."],["🍬","Permen",0,"Belum tepat. Tumbuhan membuat gula sendiri, bukan menerima permen."]];
+function render(){
+ document.getElementById('pb').style.width=(S/(N-1)*100)+'%';
+ document.getElementById('pv').disabled=S==0;
+ document.getElementById('nx').style.visibility=S==N-1?'hidden':'visible';
+ var h='';
+ if(S==0)h='<div class="center"><div class="big"><span class="sun">☀️</span> <span class="float">🌱</span></div><h1>Petualangan Fotosintesis</h1><p class="mut">Media Pembelajaran Interaktif IPAS</p><p><b>Kelas 5 SD</b></p><p class="mut">Disusun oleh: Eni Setiyo Wati, S.Pd<br>SD Negeri Jadi</p><p>Siap belajar? Tekan <b>Lanjut</b>!</p></div>';
+ if(S==1)h='<h2>🎯 Tujuan Pembelajaran</h2><p>Setelah belajar, kamu dapat:</p><ul class="list"><li>✅ Menyebutkan bahan-bahan yang dibutuhkan tumbuhan untuk fotosintesis.</li><li>✅ Mengenali bagian tumbuhan yang membantu fotosintesis.</li></ul><p class="mut">Pertanyaan pemantik: Tumbuhan tidak makan nasi. Lalu, bagaimana tumbuhan mendapat makanan?</p>';
+ if(S==2)h='<h2>🌿 Apa itu Fotosintesis?</h2><p>Fotosintesis adalah cara tumbuhan hijau <b>membuat makanannya sendiri</b> di daun dengan bantuan cahaya matahari.</p><div class="row"><div class="fact"><span>🌞</span><b>Cahaya matahari</b>sumber tenaga</div><div class="fact"><span>💧</span><b>Air</b>dari tanah lewat akar</div><div class="fact"><span>☁️</span><b>Karbon dioksida</b>dari udara lewat daun</div></div><div class="eq">Air + Karbon dioksida + Cahaya → Makanan (glukosa) + Oksigen</div><p>Zat hijau pada daun bernama <b>klorofil</b>. Zat ini menangkap cahaya matahari.</p>';
+ if(S==3){h='<h2>🎮 Beri Makan si Tanaman!</h2><p>Sentuh bahan yang dibutuhkan tumbuhan untuk fotosintesis. Hati-hati, ada yang salah!</p><div class="stage" id="st"><div class="plant" id="pl">🪴</div></div><div class="tiles">';
+  A.forEach(function(a,i){h+='<button class="tile'+(tog[i]?' ok':'')+'" onclick="feed('+i+')"><span>'+a[0]+'</span>'+a[1]+'</button>'});
+  h+='</div><div class="msg" id="mg">Pilih satu bahan untuk memulai.</div>';}
+ if(S==4)quiz(); if(S==5)h=fin();
+ v.innerHTML='<div class="card">'+(h||'')+'</div>';
+ if(S==3&&tog.filter(Boolean).length>=3)setTimeout(bloom,50);
+ if(S==4)qfill();
+}
+function feed(i){var a=A[i],st=document.getElementById('st'),m=document.getElementById('mg');
+ if(a[2]){tog[i]=1;var f=document.createElement('div');f.className='fly';f.textContent=a[0];f.style.left=(10+i*30)+'%';f.style.top='5%';st.appendChild(f);
+  m.className='msg';m.textContent='🌟 '+a[3];document.querySelectorAll('.tile')[i].classList.add('ok');
+  if(tog.filter(Boolean).length==3)setTimeout(bloom,1200);}
+ else{m.className='msg bad';m.textContent='💡 '+a[3];}}
+function bloom(){var st=document.getElementById('st');if(!st||st.querySelector('.up'))return;document.getElementById('pl').className='plant on';
+ ['💨','🍬','💨'].forEach(function(e,k){var u=document.createElement('div');u.className='up';u.textContent=e;u.style.left=(30+k*20)+'%';u.style.top='60%';st.appendChild(u)});
+ var m=document.getElementById('mg');m.className='msg';m.textContent='🎉 Hebat! Dengan cahaya, air, dan karbon dioksida, tumbuhan membuat makanan (🍬) dan melepas oksigen (💨).'}
+function quiz(){if(!ord.length)ord=sh(Q.map(function(_,i){return i}))}
+function qfill(){var q=Q[ord[qi]],o=sh([q].concat(sh(Q.filter(function(x){return x!=q})).slice(0,3)));ans=false;
+ var h='<h2>📝 Cocokkan! Soal '+(qi+1)+' dari 10</h2><p>Cocokkan istilah ini dengan keterangan yang tepat:</p><div class="term">'+q[0]+'</div>';
+ o.forEach(function(x){h+='<button class="opt" data-c="'+(x==q?1:0)+'">'+x[1]+'</button>'});
+ h+='<div class="msg" id="fb">Pilih keterangan yang cocok.</div><div class="nav"><span class="mut">Skor: '+sc+'</span><button class="pri" id="qn" style="visibility:hidden">'+(qi==9?'Selesai ✓':'Soal berikutnya →')+'</button></div>';
+ v.firstChild.innerHTML=h;
+ v.querySelectorAll('.opt').forEach(function(b){b.onclick=function(){if(ans)return;ans=true;var ok=b.dataset.c==1,fb=document.getElementById('fb');
+  if(ok){sc++;b.classList.add('ok');fb.className='msg';fb.textContent='🌟 '+['Hebat sekali!','Luar biasa, kamu pintar!','Tepat sekali, pertahankan!','Keren, jawabanmu benar!'][qi%4]}
+  else{b.classList.add('no');v.querySelectorAll('.opt').forEach(function(x){if(x.dataset.c==1)x.classList.add('ok')});fb.className='msg bad';fb.textContent='💡 Belum tepat. '+q[2]}
+  document.getElementById('qn').style.visibility='visible'}});
+ document.getElementById('qn').onclick=function(){if(qi==9){S=5;render()}else{qi++;qfill()}}}
+function fin(){var s=sc*10,e=s>=80?'🏆':s>=60?'🌟':'🌱',t=s>=80?'Luar biasa! Kamu paham bahan fotosintesis.':s>=60?'Bagus! Ulangi sedikit materi agar makin paham.':'Tetap semangat! Yuk baca materi lagi lalu coba kuis kembali.';
+ return '<div class="center"><div class="big">'+e+'</div><h2>Umpan Balik</h2><div class="score">'+s+'</div><p>Benar '+sc+' dari 10 soal</p><p>'+t+'</p></div><h2>💭 Refleksi</h2><p>1. Bahan apa saja yang dibutuhkan tumbuhan untuk fotosintesis?</p><p>2. Bagian mana yang paling mudah kamu pahami?</p><textarea rows="3" placeholder="Tulis jawabanmu di sini..."></textarea><div class="nav"><button onclick="sc=0;qi=0;ord=[];S=4;render()">Ulangi kuis 🔁</button></div>'}
+document.getElementById('nx').onclick=function(){if(S<N-1){S++;render()}};
+document.getElementById('pv').onclick=function(){if(S>0){S--;render()}};
+render();
+</script></body></html>
